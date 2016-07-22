@@ -5,14 +5,23 @@ import six
 
 
 class SlackRequest(object):
+    def __init__(self, token):
+        self.token = token
+        self.connect_timeout = 3.05
+        self.request_timeout = 10
 
-    @staticmethod
-    def do(token, request="?", post_data=None, domain="slack.com"):
+    def do(
+        self,
+        request="?",
+        post_data=None,
+        domain="slack.com",
+        connect_timeout=None,
+        request_timeout=None,
+    ):
         '''
         Perform a POST request to the Slack Web API
 
         Args:
-            token (str): your authentication token
             request (str): the method to call from the Slack API. For example: 'channels.list'
             post_data (dict): key/value arguments to pass for the request. For example:
                 {'channel': 'CABC12345'}
@@ -21,12 +30,20 @@ class SlackRequest(object):
         '''
         post_data = post_data or {}
 
+        request_timeout = request_timeout or self.request_timeout
+        connect_timeout = connect_timeout or self.connect_timeout
+
         for k, v in six.iteritems(post_data):
             if not isinstance(v, six.string_types):
                 post_data[k] = json.dumps(v)
 
         url = 'https://{0}/api/{1}'.format(domain, request)
-        post_data['token'] = token
+        post_data['token'] = self.token
         files = {'file': post_data.pop('file')} if 'file' in post_data else None
 
-        return requests.post(url, data=post_data, files=files)
+        return requests.post(
+            url,
+            data=post_data,
+            files=files,
+            timeout=(connect_timeout, request_timeout, ),
+        )

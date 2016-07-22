@@ -25,7 +25,7 @@ class Server(object):
         self.connected = False
         self.pingcounter = 0
         self.ws_url = None
-        self.api_requester = SlackRequest()
+        self.api_requester = SlackRequest(self.token)
 
         if connect:
             self.rtm_connect()
@@ -64,7 +64,7 @@ class Server(object):
         return self.__str__()
 
     def rtm_connect(self, reconnect=False):
-        reply = self.api_requester.do(self.token, "rtm.start")
+        reply = self.api_requester.do("rtm.start", request_timeout=None)
         if reply.status_code != 200:
             raise SlackConnectionError
         else:
@@ -167,7 +167,6 @@ class Server(object):
         Note: this action is not allowed by bots, they must be invited to channels.
         '''
         return self.api_requester.do(
-            self.token,
             "channels.join?name={}".format(name)
         ).text
 
@@ -201,7 +200,7 @@ class Server(object):
 
             See here for more information on responses: https://api.slack.com/web
         '''
-        return self.api_requester.do(self.token, method, kwargs).text
+        return self.api_requester.do(method, kwargs).text
 
 
 class SlackConnectionError(Exception):
