@@ -64,7 +64,7 @@ class Server(object):
         return self.__str__()
 
     def rtm_connect(self, reconnect=False):
-        reply = self.api_requester.do("rtm.start", request_timeout=None)
+        reply = self.api_requester.do("rtm.start", read_timeout=None)
         if reply.status_code != 200:
             raise SlackConnectionError
         else:

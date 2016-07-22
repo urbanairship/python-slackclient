@@ -8,7 +8,7 @@ class SlackRequest(object):
     def __init__(self, token):
         self.token = token
         self.connect_timeout = 3.05
-        self.request_timeout = 10
+        self.read_timeout = 10
 
     def do(
         self,
@@ -16,7 +16,7 @@ class SlackRequest(object):
         post_data=None,
         domain="slack.com",
         connect_timeout=None,
-        request_timeout=None,
+        read_timeout=None,
     ):
         '''
         Perform a POST request to the Slack Web API
@@ -30,7 +30,7 @@ class SlackRequest(object):
         '''
         post_data = post_data or {}
 
-        request_timeout = request_timeout or self.request_timeout
+        read_timeout = read_timeout or self.read_timeout
         connect_timeout = connect_timeout or self.connect_timeout
 
         for k, v in six.iteritems(post_data):
@@ -45,5 +45,5 @@ class SlackRequest(object):
             url,
             data=post_data,
             files=files,
-            timeout=(connect_timeout, request_timeout, ),
+            timeout=(connect_timeout, read_timeout, ),
         )
